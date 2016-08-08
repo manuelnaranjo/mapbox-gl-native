@@ -1,0 +1,25 @@
+{
+  "version": 8,
+  "name": "Custom",
+  "metadata": {
+    "mapbox:autocomposite": true,
+    "mapbox:type": "template"
+  },
+  "sources": {},
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "rgba(0,0,0,0)"
+      }
+    },
+    {
+      "id": "fill",
+      "type": "fill",
+      "paint": {
+        "background-color": "rgba(255,0,0,0)"
+      }
+    }
+  ]
+}
