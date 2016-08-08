@@ -31,12 +31,14 @@ target_link_libraries(qmapboxgl
     PRIVATE Qt5::Location
     PRIVATE Qt5::OpenGL
     PRIVATE Qt5::Quick
+    PRIVATE stdc++
 )
 
 target_link_libraries(mbgl-qt
     PRIVATE qmapboxgl
     PRIVATE Qt5::OpenGL
     PRIVATE Qt5::Widgets
+    PRIVATE stdc++
 )
 
 # QtQuick app
@@ -49,4 +51,5 @@ target_link_libraries(mbgl-qt-qml
     PRIVATE qmapboxgl
     PRIVATE Qt5::Location
     PRIVATE Qt5::Quick
+    PRIVATE stdc++
 )
