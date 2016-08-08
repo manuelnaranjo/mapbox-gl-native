@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QString>
+#include <QTextStream>
 
 int kAnimationDuration = 10000;
 
@@ -19,9 +20,26 @@ MapWindow::MapWindow(const QMapboxGLSettings &settings)
     connect(&m_map, SIGNAL(needsRendering()), this, SLOT(updateGL()));
 
     // Set default location to Helsinki.
-    m_map.setCoordinateZoom(QMapbox::Coordinate(60.170448, 24.942046), 14);
+    m_map.setCoordinateZoom(QMapbox::Coordinate(0.0, 0.0), 6);
 
     changeStyle();
+
+    QFile geojson(":source.geojson");
+    geojson.open(QIODevice::ReadOnly);
+
+    QVariantMap testSource;
+    testSource["type"] = "geojson";
+    testSource["data"] = geojson.readAll();
+
+    m_map.addSource("testSource", testSource);
+
+    QVariantMap testLayer;
+    testLayer["id"] = "testLayer";
+    testLayer["type"] = "fill";
+    testLayer["source"] = "testSource";
+
+    m_map.addLayer(testLayer);
+    m_map.setPaintProperty("testLayer", "fill-color", QColor("green"));
 
     connect(&m_zoomAnimation, SIGNAL(finished()), this, SLOT(animationFinished()));
     connect(&m_zoomAnimation, SIGNAL(valueChanged(const QVariant&)), this, SLOT(animationValueChanged()));
@@ -55,16 +73,22 @@ void MapWindow::animationValueChanged()
 
 void MapWindow::changeStyle()
 {
-    static uint8_t currentStyleIndex;
+    //static uint8_t currentStyleIndex;
 
-    auto& styles = QMapbox::defaultStyles();
+    //auto& styles = QMapbox::defaultStyles();
 
-    m_map.setStyleURL(styles[currentStyleIndex].first);
-    setWindowTitle(QString("Mapbox GL: ") + styles[currentStyleIndex].second);
+    //m_map.setStyleURL(styles[currentStyleIndex].first);
 
-    if (++currentStyleIndex == styles.size()) {
+    //setWindowTitle(QString("Mapbox GL: ") + styles[currentStyleIndex].second);
+
+    /*if (++currentStyleIndex == styles.size()) {
         currentStyleIndex = 0;
-    }
+    }*/
+
+    QFile style(":style.json");
+    style.open(QIODevice::ReadOnly);
+    QTextStream in(&style);
+    m_map.setStyleJSON(QTextStream(&style).readAll());
 }
 
 void MapWindow::keyPressEvent(QKeyEvent *ev)
@@ -83,23 +107,6 @@ void MapWindow::keyPressEvent(QKeyEvent *ev)
             m_map.setLayoutProperty("road-label-small", "symbol-placement", "point");
             m_map.setLayoutProperty("road-label-medium", "symbol-placement", "point");
             m_map.setLayoutProperty("road-label-large", "symbol-placement", "point");
-
-            QFile geojson(":source.geojson");
-            geojson.open(QIODevice::ReadOnly);
-
-            QVariantMap testSource;
-            testSource["type"] = "geojson";
-            testSource["data"] = geojson.readAll();
-
-            m_map.addSource("testSource", testSource);
-
-            QVariantMap testLayer;
-            testLayer["id"] = "testLayer";
-            testLayer["type"] = "fill";
-            testLayer["source"] = "testSource";
-
-            m_map.addLayer(testLayer);
-            m_map.setPaintProperty("testLayer", "fill-color", QColor("blue"));
         }
         break;
     case Qt::Key_Tab:
@@ -126,12 +133,6 @@ void MapWindow::mousePressEvent(QMouseEvent *ev)
 #else
     m_lastPos = ev->localPos();
 #endif
-
-    if (ev->type() == QEvent::MouseButtonPress) {
-        if (ev->buttons() == (Qt::LeftButton | Qt::RightButton)) {
-            changeStyle();
-        }
-    }
 
     if (ev->type() == QEvent::MouseButtonDblClick) {
         if (ev->buttons() == Qt::LeftButton) {
@@ -184,6 +185,15 @@ void MapWindow::wheelEvent(QWheelEvent *ev)
     }
 
     m_map.scaleBy(1 + factor, ev->pos());
+
+    if ( m_map.zoom() < 4.5 ) {
+        m_map.setZoom(4.5);
+    } else if (m_map.zoom() > 15 ){
+        m_map.setZoom(15);
+    }
+
+    qDebug() << "Current zoom:" << m_map.zoom();
+
     ev->accept();
 }
 
