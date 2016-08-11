@@ -24,7 +24,7 @@ ext {
 task buildLibrary(type: Exec) {
     workingDir '../../../'
 
-    commandLine 'make', 'android-lib-arm-v7', 'android-lib-arm-v5', 'android-lib-x86', 'android-lib-x86-64', '-j8'
+    commandLine 'make', 'android-lib-arm-v7', '-j8'
 }
 
 preBuild.dependsOn buildLibrary
