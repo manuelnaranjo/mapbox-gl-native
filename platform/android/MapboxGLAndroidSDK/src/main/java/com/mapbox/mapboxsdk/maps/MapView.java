@@ -363,17 +363,17 @@ public class MapView extends FrameLayout {
      */
     @UiThread
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        String accessToken = mMapboxMap.getAccessToken();
+        /*String accessToken = mMapboxMap.getAccessToken();
         if (TextUtils.isEmpty(accessToken)) {
             accessToken = MapboxAccountManager.getInstance().getAccessToken();
             mMapboxMap.setAccessToken(accessToken);
         } else {
             // user provided access token through xml attributes, need to start MapboxAccountManager
             MapboxAccountManager.start(getContext(), accessToken);
-        }
+        }*/
 
         // Force a check for an access token
-        MapboxAccountManager.validateAccessToken(accessToken);
+        // MapboxAccountManager.validateAccessToken(accessToken);
 
         if (savedInstanceState != null && savedInstanceState.getBoolean(MapboxConstants.STATE_HAS_SAVED_STATE)) {
 
@@ -436,8 +436,8 @@ public class MapView extends FrameLayout {
         } else if (savedInstanceState == null) {
             // Start Telemetry (authorization determined in initial MapboxEventManager constructor)
             Log.i(MapView.class.getCanonicalName(), "MapView start Telemetry...");
-            MapboxEventManager eventManager = MapboxEventManager.getMapboxEventManager();
-            eventManager.initialize(getContext(), getAccessToken());
+            // MapboxEventManager eventManager = MapboxEventManager.getMapboxEventManager();
+            // eventManager.initialize(getContext(), getAccessToken());
         }
 
         // Initialize EGL
